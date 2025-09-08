@@ -1,0 +1,42 @@
+function dx=invert_pen(t,X,Ip, Mc, Lp, Mp, Fc, Beq, g, Bp)
+
+dx= zeros(4,1);
+
+Xc=X(1);
+dXc=X(2);
+alfa=X(3);
+dalfa=X(4);
+
+deno= (Mc+ Mp)*Ip + Mc*Mp*Lp^2 + Mp^2*Lp^2*sin(alfa)^2;
+
+d2Xc=( (Ip+ Mp*Lp^2)*Fc + Mp^2*Lp^2*g*cos(alfa)*sin(alfa)- (Ip+ Mp*Lp^2)*Beq*dXc- (Ip*Mp*Lp- Mp^2*Lp^3)*dalfa^2*sin(alfa)- Mp*Lp*dalfa*cos(alfa)*Bp)/deno;
+
+d2alfa=( (Mc + Mp)*Mp*g*Lp*sin(alfa)- (Mc+ Mp)*Bp*dalfa+ Fc*Mp*Lp*cos(alfa)- Mp^2*Lp^2*dalfa^2*sin(alfa)*cos(alfa)- Beq*Mp*Lp*dXc*cos(alfa) )/ deno;
+
+dx(1) = dXc;
+dx(2) = d2Xc;
+dx(3) = dalfa;
+dx(4) = d2alfa;
+
+end
+
+Ip=0.0079;
+Mc=0.7031;
+Lp=0.3302;
+Mp=0.23;
+Fc=0;
+Beq=4.3;
+g=9.81;
+Bp=0.0024;
+
+X0=[0; 0; 0.1; 0];
+
+[t,X]= ode45(@(t,X) invert_pen(t,X,Ip, Mc, Lp, Mp, Fc, Beq, g, Bp), [0 10], X0);
+
+figure;
+subplot(2,1,1); 
+plot(t, X(:,1));
+title('Posicion');
+subplot(2,1,2); 
+plot(t, X(:,3));
+title('Angulo');
